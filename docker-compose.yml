@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql-dev:
+    image: mysql:8.0
+    container_name: ats-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: letiao_ats_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-dev-data:/var/lib/mysql
+    restart: unless-stopped
+
+  mysql-test:
+    image: mysql:8.0
+    container_name: ats-mysql-test
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: letiao_ats_test
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-test-data:/var/lib/mysql
+    restart: unless-stopped
+    
+volumes:
+  mysql-dev-data:
+  mysql-test-data:

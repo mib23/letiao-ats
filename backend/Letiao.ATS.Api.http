@@ -1,0 +1,6 @@
+@Letiao.ATS.Api_HostAddress = http://localhost:5244
+
+GET {{Letiao.ATS.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
