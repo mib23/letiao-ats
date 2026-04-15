@@ -1,0 +1,106 @@
+# ================================================================
+# letiao-ats .gitignore
+# 覆盖范围：Vue3/Vite 前端 + .NET 8 后端 + MySQL + Docker
+# ================================================================
+
+
+# ─── 操作系统垃圾文件 ──────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+
+# ─── 编辑器 / IDE ──────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.ntvs*
+*.njsproj
+*.sw?
+*.swp
+
+
+# ─── 前端 (Vue3 / Vite / Node) ─────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.cache/
+frontend/coverage/
+
+# 本地环境变量（含真实密钥，不入库）
+frontend/.env.local
+frontend/.env.*.local
+
+# Vite HMR 临时文件
+frontend/*.local
+
+# npm/yarn/pnpm 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# ─── 后端 (.NET 8 / C#) ────────────────────────────────────────
+## 编译产物
+backend/bin/
+backend/obj/
+backend/publish/
+
+## .NET 用户专属设置（不应共享）
+*.user
+*.dbmdl
+*.jfm
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Nn]uget/
+.nuget/
+
+## 机密配置（含密码/连接串）
+backend/appsettings.Production.json
+backend/secrets.json
+**/secrets.json
+**/*UserSecrets*/
+
+## Visual Studio 缓存 & 临时文件
+.vs/
+[Tt]emp/
+[Tt]emporary [Ii]nternet [Ff]iles/
+
+
+# ─── 数据库 & 运行时数据 ────────────────────────────────────────
+## 临时脚本工具（不需要进仓库）
+database/run-sql.csx
+
+## OSS 本地存储（上传的文件）
+backend/wwwroot/static/
+
+
+# ─── Docker ────────────────────────────────────────────────────
+## Docker 数据卷（本地 mysql 持久化目录）
+docker-data/
+mysql-data/
+.docker/
+
+
+# ─── 其他工具 ──────────────────────────────────────────────────
+## dotnet-script 缓存
+.cache/
+
+## JetBrains Rider
+.idea/
+*.sln.iml
