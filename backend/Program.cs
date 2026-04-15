@@ -69,7 +69,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
@@ -80,6 +80,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<DbConnectionFactory>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<JobRepository>();
+builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<IOssService, LocalOssService>();
 
 // ─── 应用构建 ────────────────────────────────────────────────

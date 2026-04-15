@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 const LoginView    = () => import('@/views/LoginView.vue')
 const MainLayout   = () => import('@/layouts/MainLayout.vue')
 const DashboardView = () => import('@/views/DashboardView.vue')
+const JobListView   = () => import('@/views/jobs/JobListView.vue')
 
 const routes = [
   {
@@ -26,6 +27,12 @@ const routes = [
         name: 'Dashboard',
         component: DashboardView,
         meta: { title: '工作台' }
+      },
+      {
+        path: 'jobs',
+        name: 'Jobs',
+        component: JobListView,
+        meta: { title: '职位管理' }
       }
     ]
   },
