@@ -1,38 +1,139 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* 基础配色 */
+  --bg-body: #0B0F19;
+  --bg-panel: rgba(22, 27, 45, 0.65);
+  --brand-purple: #6366f1;
+  --brand-cyan: #06b6d4;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-light: rgba(255, 255, 255, 0.15);
+  --shadow-hover: 0 10px 25px -5px rgba(99, 102, 241, 0.25);
+  --shadow-base: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
+  /* Element Plus 覆盖 */
+  --el-color-primary: var(--brand-purple);
+  --el-color-primary-light-3: #818cf8;
+  --el-color-primary-dark-2: #4f46e5;
+  --el-bg-color: var(--bg-body);
+  --el-bg-color-overlay: #1a1a35;
+  --el-text-color-primary: var(--text-main);
+  --el-text-color-regular: var(--text-muted);
+  --el-border-color: var(--border-glass);
+  --el-border-color-light: rgba(255,255,255,0.04);
+  --el-fill-color-blank: rgba(255,255,255,0.03);
+}
 
 html, body, #app {
   height: 100%;
   font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Element Plus 深色覆盖 */
-:root {
-  --el-color-primary: #6366f1;
-  --el-color-primary-light-3: #818cf8;
-  --el-color-primary-dark-2: #4f46e5;
-  --el-bg-color: #111128;
-  --el-bg-color-overlay: #1a1a35;
-  --el-text-color-primary: #fff;
-  --el-text-color-regular: rgba(255,255,255,0.7);
-  --el-border-color: rgba(255,255,255,0.1);
-  --el-border-color-light: rgba(255,255,255,0.07);
-  --el-fill-color-blank: rgba(255,255,255,0.04);
+h1, h2, h3, h4, .title-font {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  letter-spacing: 0.5px;
 }
 
-/* 滚动条美化 */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+/* 核心公共类 (Utilities) */
+
+.glass-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-base);
+}
+
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-glass-light);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+/* Element Plus 全局组件深度覆盖美化 */
+
+/* 给主按钮注入渐变色与微动效 */
+.el-button--primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.3) !important;
+  transition: all 0.3s ease !important;
+}
+.el-button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99,102,241,0.5) !important;
+  filter: brightness(1.1);
+}
+
+/* Card 注入玻璃质感 */
+.el-card {
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border-glass) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 12px !important;
+  color: var(--text-main) !important;
+}
+
+/* 输入框无显式边框 */
+.el-input__wrapper, .el-textarea__inner {
+  background-color: var(--el-fill-color-blank) !important;
+  box-shadow: 0 0 0 1px var(--border-glass) inset !important;
+  transition: all 0.25s ease;
+}
+.el-input__wrapper.is-focus, .el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--brand-purple) inset, 0 0 8px rgba(99,102,241,0.2) !important;
+}
+
+/* 弹窗深黑+玻璃质感 */
+.el-dialog {
+  background: rgba(20, 24, 42, 0.85) !important;
+  backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--border-glass);
+  border-radius: 16px !important;
+}
+.el-dialog__title {
+  color: var(--text-main) !important;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* 表格弱化 */
+.el-table, .el-table__expanded-cell {
+  background-color: transparent !important;
+  --el-table-border-color: var(--border-glass);
+  --el-table-header-bg-color: rgba(255,255,255,0.02);
+}
+.el-table th, .el-table tr, .el-table td {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+  color: var(--text-main) !important;
+}
+.el-table::before { height: 0 !important; }
+.el-table tbody tr:hover > td {
+  background-color: rgba(255,255,255,0.05) !important;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
-
-/* Element Plus 下拉菜单深色 */
-.el-dropdown-menu { background: #1a1a35 !important; border-color: rgba(255,255,255,0.1) !important; }
-.el-dropdown-menu__item { color: rgba(255,255,255,0.75) !important; }
-.el-dropdown-menu__item:hover { background: rgba(99,102,241,0.15) !important; color: #fff !important; }
-
-/* ElMessageBox 深色 */
-.el-message-box { background: #1a1a35 !important; border-color: rgba(255,255,255,0.1) !important; }
-.el-message-box__title, .el-message-box__message { color: rgba(255,255,255,0.85) !important; }

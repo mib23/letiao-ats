@@ -1,12 +1,12 @@
 <template>
   <div class="job-list-container">
     <div class="page-header">
-      <h2>职位管理</h2>
-      <el-button type="primary" @click="handleCreate">发布新职位</el-button>
+      <h2 class="title-font text-gradient">职位管理</h2>
+      <el-button type="primary" class="hover-lift" @click="handleCreate">发布新职位</el-button>
     </div>
 
     <!-- 筛选区 -->
-    <el-card class="filter-card">
+    <el-card class="filter-card glass-panel hover-lift">
       <el-form inline :model="queryParams">
         <el-form-item label="职位名称">
           <el-input v-model="queryParams.keyword" placeholder="搜索关键词..." clearable />
@@ -26,7 +26,7 @@
     </el-card>
 
     <!-- 列表区 -->
-    <el-card class="table-card">
+    <el-card class="table-card glass-panel hover-lift">
       <el-table :data="tableData" v-loading="loading" border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="职位名称" />
