@@ -93,6 +93,8 @@ builder.Services.AddScoped<CandidateRepository>();
 builder.Services.AddScoped<CandidateService>();
 builder.Services.AddScoped<DepartmentRepository>();
 builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<PipelineRepository>();
+builder.Services.AddScoped<PipelineService>();
 builder.Services.AddScoped<IOssService, LocalOssService>();
 builder.Services.AddHttpClient<AiResumeParser>();
 

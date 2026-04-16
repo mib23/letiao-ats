@@ -44,8 +44,9 @@
             <el-tag :type="getStatusType(row.status)">{{ getStatusLabel(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
+            <el-button link type="primary" @click="$router.push(`/jobs/${row.id}/kanban`)">看板</el-button>
             <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button link :type="row.status === 'PUBLISHED' ? 'warning' : 'success'" @click="handleToggleStatus(row)">
                {{ row.status === 'PUBLISHED' ? '暂停' : '发布' }}

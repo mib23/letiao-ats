@@ -25,12 +25,17 @@
         <el-table-column prop="phone" label="联系电话" width="150" />
         <el-table-column prop="highestDegree" label="最高学历" width="120" />
         <el-table-column prop="workYears" label="工作经验(年)" width="120" />
-        <el-table-column prop="ownerName" label="归属人" width="150">
+        <el-table-column prop="ownerName" label="归属人" width="120">
            <template #default="{ row }">
              <el-tag :type="row.ownerName ? 'success' : 'info'">{{ row.ownerName || '公海池' }}</el-tag>
            </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="录入时间" />
+        <el-table-column label="流转" width="120" fixed="right">
+           <template #default="{ row }">
+             <el-button type="success" link @click="openAssignDialog(row)">投递岗位</el-button>
+           </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="录入时间" width="160" />
       </el-table>
 
       <div class="pagination-container">
@@ -122,6 +127,23 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 投递岗位弹窗 -->
+    <el-dialog v-model="assignDialogVisible" title="将候选人调入岗位流程" width="400px" class="glass-panel">
+      <el-form label-position="top">
+        <el-form-item label="选择目标岗位 (处于开放中)">
+          <el-select v-model="assignJobId" filterable placeholder="请选择职位..." style="width: 100%">
+            <el-option v-for="job in openJobs" :key="job.id" :label="job.title" :value="job.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="assignDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmAssign">确认推进</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +151,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus'
 import { candidateApi } from '@/services/candidate.api'
+import { pipelineApi } from '@/services/pipeline.api'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
@@ -148,6 +171,36 @@ const parsedData = ref(null)
 let loadingInstance = null
 
 const auth = useAuthStore()
+
+// Assign Pipeline
+const assignDialogVisible = ref(false)
+const assignJobId = ref(null)
+const assignCandidateId = ref(null)
+const openJobs = ref([])
+
+const openAssignDialog = async (row) => {
+  if (openJobs.value.length === 0) {
+    // dynamically fetch published jobs 
+    import('@/services/http').then(m => {
+       m.default.get('/api/jobs', { params: { page: 1, pageSize: 100, keyword: '' } })
+        .then(res => { openJobs.value = res.data.list })
+    })
+  }
+  assignCandidateId.value = row.id
+  assignJobId.value = null
+  assignDialogVisible.value = true
+}
+
+const confirmAssign = async () => {
+  if (!assignJobId.value) return ElMessage.warning('请选择职位')
+  try {
+    await pipelineApi.addCandidate({ candidateId: assignCandidateId.value, jobId: assignJobId.value })
+    ElMessage.success('成功投递！该候选人已进入职位初筛阶段')
+    assignDialogVisible.value = false
+  } catch(e) {
+    ElMessage.error(e.response?.data?.msg || '投递失败')
+  }
+}
 
 // Upload headers
 const uploadHeaders = computed(() => ({

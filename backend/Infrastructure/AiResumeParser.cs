@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json;
-using UglyToad.PdfPig;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
 namespace Letiao.ATS.Api.Infrastructure;
 
@@ -8,27 +10,35 @@ public class AiResumeParser(HttpClient httpClient)
 {
     private readonly string _apiKey = Environment.GetEnvironmentVariable("VOLCENGINE_API_KEY") 
                                       ?? throw new Exception("MISSING VOLCENGINE_API_KEY in .env");
+    // 火山方舟需要填写「推理接入点 ID」(ep-xxx) 或带版本后缀的模型 ID
+    private readonly string _modelId = Environment.GetEnvironmentVariable("VOLCENGINE_MODEL_ID") 
+                                      ?? "doubao-seed-2-0-pro-260215";
     
     public async Task<string> ParsePdfAndExtractInfoAsync(Stream pdfStream)
     {
         // 1. Extract Text from PDF
-        var textBuilder = new StringBuilder();
+        string pdfText;
         try
         {
-            // Reset stream position if needed
-            if (pdfStream.CanSeek) pdfStream.Position = 0;
-            using var pdfDoc = PdfDocument.Open(pdfStream, new ParsingOptions { UseLenientParsing = true });
-            foreach (var page in pdfDoc.GetPages())
+            using var pdfReader = new PdfReader(pdfStream);
+            using var pdfDoc = new PdfDocument(pdfReader);
+            var textBuilder = new StringBuilder();
+            
+            for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
             {
-                textBuilder.AppendLine(page.Text);
+                var page = pdfDoc.GetPage(i);
+                var strategy = new SimpleTextExtractionStrategy();
+                string currentText = PdfTextExtractor.GetTextFromPage(page, strategy);
+                textBuilder.Append(currentText);
             }
+            
+            pdfText = textBuilder.ToString();
         }
         catch (Exception ex)
         {
             throw new Exception($"PDF Parse Error: {ex.Message}");
         }
 
-        var pdfText = textBuilder.ToString();
         if (string.IsNullOrWhiteSpace(pdfText))
         {
             return "{}"; // No text found
@@ -49,7 +59,7 @@ JSON 字段结构如下:
 
         var requestBody = new
         {
-            model = "Doubao-Seed-2.0-pro",
+            model = _modelId,
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },

@@ -8,6 +8,7 @@ const DashboardView = () => import('@/views/DashboardView.vue')
 const JobListView   = () => import('@/views/jobs/JobListView.vue')
 const CandidateListView = () => import('@/views/candidates/CandidateListView.vue')
 const DepartmentTree = () => import('@/views/settings/DepartmentTree.vue')
+const JobKanbanView = () => import('@/views/jobs/JobKanbanView.vue')
 
 const routes = [
   {
@@ -41,6 +42,12 @@ const routes = [
         name: 'Candidates',
         component: CandidateListView,
         meta: { title: '候选人库' }
+      },
+      {
+        path: 'jobs/:id/kanban',
+        name: 'JobKanban',
+        component: JobKanbanView,
+        meta: { title: '项目进度看板' }
       },
       {
         path: 'departments',
