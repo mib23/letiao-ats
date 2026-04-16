@@ -1,7 +1,7 @@
 <template>
   <div class="candidate-list-container">
     <div class="page-header">
-      <h2 class="title-font text-gradient">候选人列表</h2>
+      <h2 class="title-font text-gradient">候选人库</h2>
       <el-button type="primary" class="hover-lift" @click="handleUpload">上传候选人简历</el-button>
     </div>
 
@@ -47,58 +47,78 @@
     </el-card>
 
     <!-- 简历上传弹窗 -->
-    <el-dialog v-model="uploadDialogVisible" title="上传外部候选人" width="500px" class="glass-panel" destroy-on-close>
-      <div style="text-align: center; padding: 20px 0;">
+    <el-dialog v-model="uploadDialogVisible" title="候选人扫描仪 - 结构化入库" width="900px" class="glass-panel" destroy-on-close>
+      
+      <!-- 未解析时展示大上传框 -->
+      <div v-show="!parsedData" style="text-align: center; padding: 40px 20px;">
         <el-upload
           drag
           action="/api/upload/resume"
           :headers="uploadHeaders"
           :on-success="handleUploadSuccess"
+          :on-progress="handleUploadProgress"
           :on-error="handleUploadError"
           :show-file-list="false"
         >
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-          <div class="el-upload__text">
-            将简历拖拽至此，或 <em>点击上传</em>
+          <el-icon class="el-icon--upload" style="color: var(--brand-purple);"><upload-filled /></el-icon>
+          <div class="el-upload__text" style="font-size: 16px;">
+            拖拽简历文件 (PDF) 放至此处，或 <em class="text-gradient">点击上传</em>
           </div>
           <template #tip>
-            <div class="el-upload__tip" style="color: var(--text-muted);">
-              支持 PDF / Word / 图片格式，自动解析关键字段
+            <div class="el-upload__tip" style="color: var(--text-muted); margin-top: 15px;">
+              系统将自动调用大语言模型进行精准结构化提取
             </div>
           </template>
         </el-upload>
       </div>
 
+      <!-- 解析完成后展示【左预览 + 右表单】 -->
       <template v-if="parsedData">
-        <div class="parsed-preview" style="text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 20px;">
-          <h4 style="color: var(--brand-cyan); margin-bottom: 10px;">🌟 智能解析结果预览</h4>
-          <el-form :model="parsedData" label-width="80px">
-            <el-form-item label="姓名">
-              <el-input v-model="parsedData.name" />
-            </el-form-item>
-            <el-form-item label="手机号">
-              <el-input v-model="parsedData.phone" />
-            </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="parsedData.email" />
-            </el-form-item>
-             <el-form-item label="性别">
-              <el-select v-model="parsedData.gender">
-                <el-option label="男" :value="1" />
-                <el-option label="女" :value="2" />
-                <el-option label="未知" :value="0" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="工作年限">
-              <el-input-number v-model="parsedData.workYears" :min="0" />
-            </el-form-item>
-          </el-form>
-        </div>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="preview-panel glass-panel">
+              <h4 class="panel-head text-gradient">📄 原件预览</h4>
+              <iframe :src="parsedData.resumeFileUrl" class="resume-iframe"></iframe>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="parsed-form-panel glass-panel">
+              <h4 class="panel-head text-gradient">🌟 智能解析结果确认</h4>
+              <el-form :model="parsedData" label-width="80px" label-position="left">
+                <el-form-item label="姓名">
+                  <el-input v-model="parsedData.name" />
+                </el-form-item>
+                <el-form-item label="手机号">
+                  <el-input v-model="parsedData.phone" />
+                </el-form-item>
+                <el-form-item label="邮箱">
+                  <el-input v-model="parsedData.email" />
+                </el-form-item>
+                <el-form-item label="性别">
+                  <el-select v-model="parsedData.gender" style="width: 100%;">
+                    <el-option label="未知" :value="0" />
+                    <el-option label="男" :value="1" />
+                    <el-option label="女" :value="2" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="最高学历">
+                  <el-input v-model="parsedData.highestDegree" />
+                </el-form-item>
+                <el-form-item label="工作年限">
+                  <el-input-number v-model="parsedData.workYears" :min="0" style="width: 100%;" />
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-col>
+        </el-row>
       </template>
+
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="uploadDialogVisible = false">取消</el-button>
-          <el-button type="primary" :disabled="!parsedData" @click="handleConfirmSave">保存入库</el-button>
+          <el-button @click="uploadDialogVisible = false" :disabled="uploading">取消</el-button>
+          <el-button type="primary" :disabled="!parsedData" @click="handleConfirmSave" :loading="saving">
+            保存归档入库
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -107,7 +127,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElLoading } from 'element-plus'
 import { candidateApi } from '@/services/candidate.api'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
@@ -120,9 +140,12 @@ const queryParams = ref({
 })
 
 const loading = ref(false)
+const uploading = ref(false)
+const saving = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const parsedData = ref(null)
+let loadingInstance = null
 
 const auth = useAuthStore()
 
@@ -149,42 +172,66 @@ const handleUpload = () => {
   uploadDialogVisible.value = true
 }
 
+const handleUploadProgress = () => {
+  uploading.value = true
+  loadingInstance = ElLoading.service({
+    target: '.el-dialog',
+    text: '正在借助 AI 引擎结构化解析您的简历（耗时约稍后秒，请耐心等待）...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+}
+
 const handleUploadSuccess = (response, uploadFile) => {
+  uploading.value = false
+  if (loadingInstance) loadingInstance.close()
+
   if (response.code === 200) {
-    ElMessage.success('简历上传成功，AI 正在结构化抽取...')
-    // Mocking AI Parse behavior dynamically
-    setTimeout(() => {
-      parsedData.value = {
-        name: uploadFile.name.split('.')[0] || '默认解析名',
-        phone: '138' + Math.floor(Math.random() * 100000000), // Random mock
-        email: 'test@example.com',
-        gender: 1,
-        highestDegree: '本科',
-        workYears: Math.floor(Math.random() * 5) + 1,
-        resumeFileUrl: response.data.url,
-        aiParsedData: JSON.stringify({ skill: "mock skill" })
+    ElMessage.success('智能解析完成！')
+    
+    // Parse the JSON string from AI model
+    let aiJson = {}
+    try {
+      if (response.data.aiParsedData) {
+        aiJson = JSON.parse(response.data.aiParsedData)
       }
-      ElMessage.success('智能解析完成！')
-    }, 1500)
+    } catch(e) {
+      console.warn('AI 无法解析 JSON', e)
+    }
+
+    parsedData.value = {
+      name: aiJson.name || uploadFile.name.split('.')[0] || '',
+      phone: aiJson.phone || '',
+      email: aiJson.email || '',
+      gender: aiJson.gender || 0,
+      highestDegree: aiJson.highestDegree || '',
+      workYears: aiJson.workYears || 0,
+      resumeFileUrl: response.data.url,
+      aiParsedData: response.data.aiParsedData || '{}'
+    }
   } else {
     ElMessage.error(response.msg || '上传失败')
   }
 }
 
 const handleUploadError = () => {
+  uploading.value = false
+  if (loadingInstance) loadingInstance.close()
   ElMessage.error('网络错误或上传失败')
 }
 
 const handleConfirmSave = async () => {
   if (!parsedData.value) return
   
+  saving.value = true
   try {
     await candidateApi.create(parsedData.value)
-    ElMessage.success('成功放入人才库！')
+    ElMessage.success('简历入库成功！')
     uploadDialogVisible.value = false
     fetchData()
   } catch (error) {
-    ElMessage.error(error.response?.data?.msg || error.message || '保存失败\n手机号冲突！该候选人已存在。')
+    ElMessage.error(error.response?.data?.msg || error.message || '保存失败。')
+  } finally {
+    saving.value = false
   }
 }
 
@@ -210,5 +257,35 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* AI 解析左侧预览 / 右侧校验 布局面板样式 */
+.preview-panel, .parsed-form-panel {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-head {
+  margin-bottom: 12px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+.resume-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background-color: #fff; /* PDF原件多为白底更护眼清楚 */
+}
+
+.parsed-form-panel .el-form {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 </style>

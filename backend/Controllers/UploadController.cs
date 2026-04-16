@@ -17,16 +17,28 @@ public class UploadController(IOssService ossService) : ControllerBase
     /// 上传简历/附件（支持 PDF/Word/图片，最大 20MB）
     /// </summary>
     [HttpPost("resume")]
-    public async Task<IActionResult> UploadResume(IFormFile file)
+    public async Task<IActionResult> UploadResume(IFormFile file, [FromServices] AiResumeParser aiParser)
     {
         try
         {
             var url = await ossService.UploadAsync(file, "resumes");
-            return Ok(ApiResponse.Ok(new { url }, "上传成功"));
+            
+            string? aiParsedData = null;
+            if (Path.GetExtension(file.FileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                using var stream = file.OpenReadStream();
+                aiParsedData = await aiParser.ParsePdfAndExtractInfoAsync(stream);
+            }
+            
+            return Ok(ApiResponse.Ok(new { url, aiParsedData }, "上传并解析成功"));
         }
         catch (ArgumentException ex)
         {
             return BadRequest(ApiResponse.Fail(400, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse.Fail(500, $"解析异常: {ex.Message}"));
         }
     }
 

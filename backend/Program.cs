@@ -85,6 +85,7 @@ builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<CandidateRepository>();
 builder.Services.AddScoped<CandidateService>();
 builder.Services.AddScoped<IOssService, LocalOssService>();
+builder.Services.AddHttpClient<AiResumeParser>();
 
 // ─── 应用构建 ────────────────────────────────────────────────
 var app = builder.Build();
