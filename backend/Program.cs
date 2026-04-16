@@ -11,6 +11,13 @@ DapperConfig.ConfigureSnakeCaseMapping();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load .env
+var envPath = Path.Combine(builder.Environment.ContentRootPath, ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
+
 // ─── 服务注册 ────────────────────────────────────────────────
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.PropertyNamingPolicy =
@@ -84,6 +91,8 @@ builder.Services.AddScoped<JobRepository>();
 builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<CandidateRepository>();
 builder.Services.AddScoped<CandidateService>();
+builder.Services.AddScoped<DepartmentRepository>();
+builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<IOssService, LocalOssService>();
 builder.Services.AddHttpClient<AiResumeParser>();
 

@@ -36,6 +36,10 @@
           <el-icon><User /></el-icon>
           <template #title>候选人库</template>
         </el-menu-item>
+        <el-menu-item index="/departments">
+          <el-icon><OfficeBuilding /></el-icon>
+          <template #title>组织架构</template>
+        </el-menu-item>
       </el-menu>
 
       <!-- 折叠按钮 -->
@@ -91,7 +95,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import {
-  DataAnalysis, Suitcase, ArrowLeftBold, ArrowRightBold, ArrowDown, SwitchButton, User
+  DataAnalysis, Suitcase, ArrowLeftBold, ArrowRightBold, ArrowDown, SwitchButton, User, OfficeBuilding
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 

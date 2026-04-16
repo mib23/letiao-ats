@@ -7,6 +7,7 @@ const MainLayout   = () => import('@/layouts/MainLayout.vue')
 const DashboardView = () => import('@/views/DashboardView.vue')
 const JobListView   = () => import('@/views/jobs/JobListView.vue')
 const CandidateListView = () => import('@/views/candidates/CandidateListView.vue')
+const DepartmentTree = () => import('@/views/settings/DepartmentTree.vue')
 
 const routes = [
   {
@@ -40,6 +41,12 @@ const routes = [
         name: 'Candidates',
         component: CandidateListView,
         meta: { title: '候选人库' }
+      },
+      {
+        path: 'departments',
+        name: 'Departments',
+        component: DepartmentTree,
+        meta: { title: '组织架构' }
       }
     ]
   },

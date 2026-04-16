@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `username` VARCHAR(50) NOT NULL COMMENT '登录账号 (手机号/工号)',
   `password_hash` VARCHAR(255) NOT NULL,
   `real_name` VARCHAR(50) NOT NULL COMMENT '真实姓名',
+  `department_id` INT DEFAULT NULL COMMENT '关联部门(如果有)',
   `department_name` VARCHAR(100) NULL COMMENT '所属部门名称(冗余)',
   `status` TINYINT(1) DEFAULT 1 COMMENT '1-正常使用, 0-禁用/离职',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -27,6 +28,16 @@ CREATE TABLE IF NOT EXISTS `sys_user_role` (
   `role_id` INT NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色绑定表';
+
+CREATE TABLE IF NOT EXISTS `sys_department` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL COMMENT '部门名称',
+  `parent_id` INT DEFAULT 0 COMMENT '父级部门ID, 0为顶级',
+  `order_num` INT DEFAULT 0 COMMENT '排序',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织架构部门台账表';
 
 CREATE TABLE IF NOT EXISTS `ats_candidate` (
   `id` INT NOT NULL AUTO_INCREMENT,

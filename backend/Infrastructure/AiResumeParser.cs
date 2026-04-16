@@ -6,7 +6,8 @@ namespace Letiao.ATS.Api.Infrastructure;
 
 public class AiResumeParser(HttpClient httpClient)
 {
-    private readonly string _apiKey = "ark-3e72e3eb-1467-4cb3-be2d-a1c3d22472de-d0114";
+    private readonly string _apiKey = Environment.GetEnvironmentVariable("VOLCENGINE_API_KEY") 
+                                      ?? throw new Exception("MISSING VOLCENGINE_API_KEY in .env");
     
     public async Task<string> ParsePdfAndExtractInfoAsync(Stream pdfStream)
     {

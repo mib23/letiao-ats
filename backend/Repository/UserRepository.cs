@@ -16,7 +16,7 @@ public class UserRepository(DbConnectionFactory dbFactory, ILogger<UserRepositor
 
         // 第一次查询：用户基础信息
         const string userSql = @"
-            SELECT id, username, password_hash, real_name, department_name, status, created_at, updated_at
+            SELECT id, username, password_hash, real_name, department_id, department_name, status, created_at, updated_at
             FROM sys_user
             WHERE username = @Username AND status = 1";
 
@@ -50,5 +50,22 @@ public class UserRepository(DbConnectionFactory dbFactory, ILogger<UserRepositor
         await using var conn = await dbFactory.CreateOpenConnectionAsync();
         const string sql = "SELECT * FROM sys_user WHERE id = @Id AND status = 1";
         return await conn.QueryFirstOrDefaultAsync<SysUser>(sql, new { Id = id });
+    }
+
+    public async Task<bool> UpdateDepartmentAsync(int userId, int? deptId, string? deptName)
+    {
+        const string sql = "UPDATE sys_user SET department_id = @DeptId, department_name = @DeptName WHERE id = @UserId";
+        await using var conn = await dbFactory.CreateOpenConnectionAsync();
+        return await conn.ExecuteAsync(sql, new { DeptId = deptId, DeptName = deptName, UserId = userId }) > 0;
+    }
+
+    public async Task<IEnumerable<SysUser>> GetUsersByDepartmentAsync(int? deptId)
+    {
+        var sql = deptId.HasValue && deptId > 0
+            ? "SELECT id, username, real_name, department_id, department_name FROM sys_user WHERE department_id = @DeptId AND status = 1"
+            : "SELECT id, username, real_name, department_id, department_name FROM sys_user WHERE status = 1";
+        
+        await using var conn = await dbFactory.CreateOpenConnectionAsync();
+        return await conn.QueryAsync<SysUser>(sql, new { DeptId = deptId });
     }
 }

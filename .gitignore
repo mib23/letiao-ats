@@ -75,6 +75,8 @@ backend/appsettings.Production.json
 backend/secrets.json
 **/secrets.json
 **/*UserSecrets*/
+.env
+backend/.env
 
 ## Visual Studio 缓存 & 临时文件
 .vs/

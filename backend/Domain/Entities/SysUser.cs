@@ -7,6 +7,7 @@ public class SysUser
     public string Username { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public string RealName { get; set; } = string.Empty;
+    public int? DepartmentId { get; set; }
     public string? DepartmentName { get; set; }
     public int Status { get; set; } = 1;
     public DateTime CreatedAt { get; set; }
