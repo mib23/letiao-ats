@@ -3,20 +3,22 @@
     <h2 class="page-title">工作台</h2>
 
     <!-- 统计卡片 -->
-    <div class="stat-grid">
-      <div v-for="stat in stats" :key="stat.label" class="stat-card">
-        <div class="stat-icon" :style="{ background: stat.bg }">
-          <el-icon :size="22"><component :is="stat.icon" /></el-icon>
+    <el-row :gutter="24" class="stat-row">
+      <el-col :span="6" v-for="stat in stats" :key="stat.label">
+        <div class="stat-card glass-panel hover-lift">
+          <div class="stat-icon" :style="{ background: stat.bg }">
+            <el-icon :size="22"><component :is="stat.icon" /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value text-gradient">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
         </div>
-        <div class="stat-info">
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
-        </div>
-      </div>
-    </div>
+      </el-col>
+    </el-row>
 
     <!-- 系统状态 -->
-    <div class="section-card">
+    <div class="section-card glass-panel hover-lift">
       <div class="section-header">
         <span class="section-title">系统状态</span>
         <el-button size="small" :loading="healthLoading" @click="fetchHealth">刷新</el-button>
@@ -83,32 +85,24 @@ onMounted(fetchHealth)
 .page-title { font-size: 22px; font-weight: 700; margin: 0 0 24px; }
 
 /* ── 统计卡片 ── */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-row { margin-bottom: 24px; }
 .stat-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: transform 0.2s, border-color 0.2s;
 }
-.stat-card:hover { transform: translateY(-3px); border-color: rgba(99,102,241,0.3); }
 .stat-icon {
   width: 48px; height: 48px;
   border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   color: #fff; flex-shrink: 0;
 }
-.stat-value { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
+.stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
 .stat-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 4px; }
 
 /* ── 区块卡片 ── */
 .section-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px;
   padding: 20px 24px;
 }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }

@@ -147,11 +147,14 @@ async function handleLogin() {
   z-index: 1;
   width: 420px;
   padding: 48px 40px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* 深蓝色微透的亚克力毛玻璃底座 */
+  background: rgba(14, 21, 56, 0.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  /* 内发光增强质感 */
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), inset 0 2px 24px rgba(99, 102, 241, 0.1);
   border-radius: 24px;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
 }
 
 /* ── 头部 ── */
