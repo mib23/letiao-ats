@@ -2,6 +2,7 @@ using Dapper;
 using Letiao.ATS.Api.Application;
 using Letiao.ATS.Api.Domain;
 using Letiao.ATS.Api.Infrastructure;
+using Letiao.ATS.Api.Common;
 
 namespace Letiao.ATS.Api.Repository;
 
