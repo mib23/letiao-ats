@@ -15,19 +15,24 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await next(context);
         }
+        catch (BusinessException bex)
+        {
+            logger.LogWarning("业务异常: {Message}", bex.Message);
+            await WriteErrorResponseAsync(context, bex.Code, bex.Message);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "未处理的全局异常: {Message}", ex.Message);
-            await WriteErrorResponseAsync(context, ex);
+            await WriteErrorResponseAsync(context, 500, $"服务器内部错误: {ex.Message}");
         }
     }
 
-    private static async Task WriteErrorResponseAsync(HttpContext context, Exception ex)
+    private static async Task WriteErrorResponseAsync(HttpContext context, int code, string message)
     {
         context.Response.ContentType = "application/json; charset=utf-8";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        context.Response.StatusCode = code >= 400 && code < 600 ? code : (int)HttpStatusCode.InternalServerError;
 
-        var response = ApiResponse.Fail(500, $"服务器内部错误: {ex.Message}");
+        var response = ApiResponse.Fail(code, message);
         var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase

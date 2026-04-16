@@ -82,6 +82,8 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JobRepository>();
 builder.Services.AddScoped<JobService>();
+builder.Services.AddScoped<CandidateRepository>();
+builder.Services.AddScoped<CandidateService>();
 builder.Services.AddScoped<IOssService, LocalOssService>();
 
 // ─── 应用构建 ────────────────────────────────────────────────

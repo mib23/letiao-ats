@@ -6,6 +6,7 @@ const LoginView    = () => import('@/views/LoginView.vue')
 const MainLayout   = () => import('@/layouts/MainLayout.vue')
 const DashboardView = () => import('@/views/DashboardView.vue')
 const JobListView   = () => import('@/views/jobs/JobListView.vue')
+const CandidateListView = () => import('@/views/candidates/CandidateListView.vue')
 
 const routes = [
   {
@@ -33,6 +34,12 @@ const routes = [
         name: 'Jobs',
         component: JobListView,
         meta: { title: '职位管理' }
+      },
+      {
+        path: 'candidates',
+        name: 'Candidates',
+        component: CandidateListView,
+        meta: { title: '候选人库' }
       }
     ]
   },
